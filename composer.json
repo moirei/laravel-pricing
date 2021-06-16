@@ -1,0 +1,42 @@
+{
+    "name": "moirei/laravel-pricing",
+    "description": "Easily manage complex pricing.",
+    "homepage": "https://moirei.github.io/laravel-pricing",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Augustus",
+            "email": "augustusokoye@moirei.com"
+        }
+    ],
+    "keywords":[
+        "MOIREI",
+        "Laravel",
+        "pricing",
+        "volume",
+        "graduated",
+        "volume pricing",
+        "graduated pricing"
+    ],
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-f": "vendor/bin/phpunit --filter"
+    },
+    "require": {
+        "php": "^7.2|^8.0",
+        "illuminate/database": "^7.0|^8.0",
+        "laravel/helpers": "^1.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "orchestra/testbench": "^6.17"
+    },
+    "autoload": {
+        "psr-4": {
+            "MOIREI\\Pricing\\": "src",
+            "MOIREI\\Pricing\\Tests\\": "tests"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+  }

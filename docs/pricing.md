@@ -18,7 +18,7 @@ $pricing->price(4); // returns 100.0
 
 ## Package
 
-`Package` pricing computes the total result but unit groups. For example, a unit amount of $25.0 for every 5 units. Results are rounded up such that 8 units returns $50.0
+`Package` pricing computes the total result in package groups. For example, an amount of $25.0 for every 5 units. Results are rounded up such that 8 units returns $50.0.
 
 ```php
 use MOIREI\Pricing\Pricing;
@@ -35,8 +35,8 @@ $pricing->price(8); // returns 50.0
 ```
 
 ## Volume
-Use `volume` pricing to apply charges based on tier of the `quanity`.
-For example, with the tiers below, charges on 1-5 units falls in the first tier, 6-10 within the second and within the third for 11 and above.
+Use `volume` pricing to apply charges based on tier of the `quantity`.
+For example, with the tiers below; charges on 1-5 units fall in the first tier, 6-10 within the second tier, and within the third for 11 units and above.
 
 ```php
 $pricing = Pricing::make([
@@ -68,7 +68,7 @@ Use `graduated` pricing to progressively calculate a charge based on all applica
 
 ```php
 $pricing = Pricing::make([
-  'model' => 'volume',
+  'model' => 'graduated',
   'tiers' => [
     [
       'max' => 5,
@@ -98,4 +98,4 @@ $pricing->price(12); // returns (5 x 4) + (5 x 3 + 0.1) + (2 x 2 + 0.2) = 39.3
 ```
 
 ## Flat Fees
-For `volume` and `graduated` pricing, using `flat_amount` for the provided tiers to include a flat fee for every charge.
+For `volume` and `graduated` pricing, use `flat_amount` for the provided tiers to include a flat fee for every charge.

@@ -2,6 +2,8 @@
 
 You can easily implement multi-currency or locale with price naming.
 
+## Set Pricing
+
 ```php
 $tiers = [
   [
@@ -33,7 +35,7 @@ $pricing = [
   'US' => [
     'model' => 'volume',
     'tiers' => $tiers,
-    'data' => $data,
+    'data' => ['currency' => 'USD'],
   ],
 ];
 
@@ -59,13 +61,12 @@ $product->pricing('AU', function($pricing){
 });
 ```
 
-Get pricing
+## Get Price
 ```php
 
 $price = $product->price;
 $price = $product->price();
 
-// Get pricing for a measure of 2
+// Get pricing for 2 units
 $price = $product->price(2);
-$price = $product->price(2, 'AU'); // specify name
 ```

@@ -11,6 +11,11 @@ module.exports = {
     docsBranch: "master",
     sidebar: [
       {
+        title: "Concept",
+        collapsable: true,
+        path: "/concept",
+      },
+      {
         title: "Get started",
         collapsable: true,
         children: ["/installation", "/prepare-models"],
@@ -22,12 +27,7 @@ module.exports = {
       {
         title: "Usage",
         collapsable: true,
-        children: ["/usage/eloquent", "/usage/complex"],
-      },
-      {
-        title: "Concept",
-        collapsable: true,
-        path: "/concept",
+        children: ["/usage/eloquent", "/usage/stand-alone", "/usage/complex"],
       },
     ],
     nav: [{ text: "Home", link: "/" }],

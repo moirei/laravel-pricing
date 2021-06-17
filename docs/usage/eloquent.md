@@ -1,15 +1,35 @@
 # Eloquent
 
-## Standard pricing
+## Set Pricing
+### Standard Pricing
+Set a standard pricing of $5 per unit
 ```php
-$product->pricing(3.6);
+$product->pricing([
+  'model' => 'standard',
+  'unit_amount' => 5,
+]);
+// or
+$product->pricing(5);
 // or
 $product->pricing(function($pricing){
-  $pricing->standard(3.6);
+  $pricing->standard(5);
+});
+```
+### Package Pricing
+Set a package pricing of $25 per 5 units
+```php
+$product->pricing([
+  'model' => 'package',
+  'unit_amount' => 25,
+  'units' => 5,
+]);
+// or
+$product->pricing(function($pricing){
+  $pricing->package(25, 5);
 });
 ```
 
-## Volume & Graduated (tiered) pricing
+### Volume & Graduated Pricing
 ```php
 $tiers = [
   [
@@ -40,7 +60,7 @@ $product->pricing(function($pricing){
 });
 ```
 
-## Get pricing
+## Get Price
 ```php
 
 $price = $product->price;

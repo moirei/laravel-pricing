@@ -1,8 +1,6 @@
 # Prepare Models
 
-Use the pricing traint and cast;
-
-**NOTE:** Casting is optional
+Ascribe the `MOIREI\Pricing\HasPricing` trait to your eloquent model. You can also (optionaly) cast the `pricing` field. This attribute holds a key-value pair of pricing names and their instance.
 
 ```php
 use Illuminate\Database\Eloquent\Model;

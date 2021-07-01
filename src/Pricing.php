@@ -57,7 +57,7 @@ class Pricing implements Arrayable
      */
     public function __construct(Pricing | array $attributes = [])
     {
-        if($attributes instanceof Pricing){
+        if ($attributes instanceof Pricing) {
             $attributes = $attributes->toArray();
         }
         $this->model(data_get($attributes, 'model', self::MODEL_STANDARD));
@@ -84,16 +84,17 @@ class Pricing implements Arrayable
      * @param string|null $model
      * @return \MOIREI\Pricing\Pricing|string
      */
-    public function model(string $model = null){
-        if(is_null($model)) return $this->model;
+    public function model(string $model = null)
+    {
+        if (is_null($model)) return $this->model;
 
         $model = Str::lower($model);
-        if(!in_array($model, [
+        if (!in_array($model, [
             self::MODEL_STANDARD,
             self::MODEL_PACKAGE,
             self::MODEL_VOLUME,
             self::MODEL_GRADUATED,
-        ],)){
+        ],)) {
             throw new InvalidArgumentException("Invalid pricing model '$model'.");
         }
 
@@ -107,8 +108,9 @@ class Pricing implements Arrayable
      * @param array|null $tiers
      * @return \MOIREI\Pricing\Pricing|array
      */
-    public function tiers(array $tiers = null){
-        if(is_null($tiers)) return $this->tiers;
+    public function tiers(array $tiers = null)
+    {
+        if (is_null($tiers)) return $this->tiers;
 
         $this->tiers = $tiers;
         return $this;
@@ -120,7 +122,8 @@ class Pricing implements Arrayable
      * @param array $tiers
      * @return \MOIREI\Pricing\Pricing
      */
-    public function tier(array $tier){
+    public function tier(array $tier)
+    {
         array_push($this->tiers, $tier);
         return $this;
     }
@@ -131,8 +134,9 @@ class Pricing implements Arrayable
      * @param float $unit_amount
      * @return \MOIREI\Pricing\Pricing
      */
-    public function unitAmount(float $unit_amount){
-        if(is_null($unit_amount)) return $this->unit_amount;
+    public function unitAmount(float $unit_amount)
+    {
+        if (is_null($unit_amount)) return $this->unit_amount;
 
         $this->unit_amount = $unit_amount;
         return $this;
@@ -144,8 +148,9 @@ class Pricing implements Arrayable
      * @param float $units
      * @return \MOIREI\Pricing\Pricing
      */
-    public function units(float $units){
-        if(is_null($units)) return $this->units;
+    public function units(float $units)
+    {
+        if (is_null($units)) return $this->units;
 
         $this->units = $units;
         return $this;
@@ -157,7 +162,8 @@ class Pricing implements Arrayable
      * @param float|int $unit_amount
      * @return \MOIREI\Pricing\Pricing
      */
-    public function standard(float|int $unit_amount){
+    public function standard(float|int $unit_amount)
+    {
         $this->model(self::MODEL_STANDARD);
         $this->unit_amount = $unit_amount;
         return $this;
@@ -170,7 +176,8 @@ class Pricing implements Arrayable
      * @param float|int $units
      * @return \MOIREI\Pricing\Pricing
      */
-    public function package(float|int $unit_amount, float|int $units){
+    public function package(float|int $unit_amount, float|int $units)
+    {
         $this->model(self::MODEL_PACKAGE);
         $this->unit_amount = $unit_amount;
         $this->units = $units;
@@ -183,7 +190,8 @@ class Pricing implements Arrayable
      * @param array $tiers
      * @return \MOIREI\Pricing\Pricing
      */
-    public function volume(array $tiers){
+    public function volume(array $tiers)
+    {
         $this->model(self::MODEL_VOLUME);
         $this->tiers = $tiers;
         return $this;
@@ -195,7 +203,8 @@ class Pricing implements Arrayable
      * @param array $tiers
      * @return \MOIREI\Pricing\Pricing
      */
-    public function graduated(array $tiers){
+    public function graduated(array $tiers)
+    {
         $this->model(self::MODEL_GRADUATED);
         $this->tiers = $tiers;
         return $this;
@@ -208,12 +217,13 @@ class Pricing implements Arrayable
      * @param string $channel
      * @return float
      */
-    public function price(int|float $amount = 1): float{
+    public function price(int|float $amount = 1): float
+    {
         $model = Str::lower($this->model);
 
-        if($model === self::MODEL_STANDARD){
+        if ($model === self::MODEL_STANDARD) {
             return PriceCalculator::standard($amount, $this->unit_amount);
-        }elseif($model === self::MODEL_PACKAGE){
+        } elseif ($model === self::MODEL_PACKAGE) {
             return PriceCalculator::package($amount, $this->unit_amount, $this->units);
         }
 
@@ -226,8 +236,9 @@ class Pricing implements Arrayable
      * @param Illuminate\Support\Collection|array|null $data
      * @return \MOIREI\Pricing\Pricing|Collection
      */
-    public function data(Collection|array $data = null){
-        if(is_null($data)) return collect($this->data);
+    public function data(Collection|array $data = null)
+    {
+        if (is_null($data)) return collect($this->data);
 
         $this->data = collect($data)->toArray();
         return $this;
@@ -248,7 +259,8 @@ class Pricing implements Arrayable
      *
      * @return array
      */
-    public function toArray(): array{
+    public function toArray(): array
+    {
         return [
             'model' => $this->model,
             'tiers' => $this->tiers,

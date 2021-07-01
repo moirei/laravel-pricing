@@ -17,8 +17,8 @@ class CastPricing implements CastsAttributes
      */
     public function get($model, $key, $value, $attributes)
     {
-        $pricing = json_decode($value);
-        return collect($pricing)->map(fn($p) => Pricing::make($p));
+        $pricing = json_decode($value, true) ?? [];
+        return collect($pricing)->map(fn ($p) => Pricing::make($p));
     }
 
     /**

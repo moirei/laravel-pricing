@@ -15,7 +15,8 @@ class PriceCalculator
      * @param int|float $amount
      * @return float
      */
-    public static function standard(int|float $quantity, int|float $amount): float{
+    public static function standard(int|float $quantity, int|float $amount): float
+    {
         return $quantity * $amount;
     }
 
@@ -27,7 +28,8 @@ class PriceCalculator
      * @param int|float $units
      * @return float
      */
-    public static function package(int|float $quantity, int|float $amount, int|float $units): float{
+    public static function package(int|float $quantity, int|float $amount, int|float $units): float
+    {
         $count = ceil($quantity / $units);
         return $amount * $count;
     }
@@ -39,7 +41,8 @@ class PriceCalculator
      * @param array $tiers
      * @return float
      */
-    public static function volume(int|float $quantity, array $tiers): float{
+    public static function volume(int|float $quantity, array $tiers): float
+    {
         $tier = self::getTier($quantity, $tiers);
         return ($quantity * data_get($tier, 'unit_amount', 0)) + data_get($tier, 'flat_amount', 0);
     }
@@ -51,21 +54,22 @@ class PriceCalculator
      * @param array $tiers
      * @return float
      */
-    public static function graduated(int|float $quantity, array $tiers): float{
+    public static function graduated(int|float $quantity, array $tiers): float
+    {
         $tiers = self::getTiers($quantity, $tiers);
         $price = 0;
         $last = 0;
         $index = 0;
-        $max_tier_value = collect($tiers)->map(fn($tier) => $tier['max'])->max();
+        $max_tier_value = collect($tiers)->map(fn ($tier) => $tier['max'])->max();
 
-        foreach($tiers as $tier){
+        foreach ($tiers as $tier) {
             $max = data_get($tier, 'max');
-            if($index++ == 0){
-                $x = $quantity < $max? $quantity : $max;
-            }elseif($max == self::INFINITY){
+            if ($index++ == 0) {
+                $x = $quantity < $max ? $quantity : $max;
+            } elseif ($max == self::INFINITY) {
                 $x = $quantity - $max_tier_value;
-            }else{
-                $x = ($quantity < $max? $quantity : $max) - $last;
+            } else {
+                $x = ($quantity < $max ? $quantity : $max) - $last;
             }
 
             $last = $max;
@@ -82,16 +86,17 @@ class PriceCalculator
      * @param \Illuminate\Support\Collection|array $tiers
      * @return array|null
      */
-    protected static function getTier(int|float $quantity, Collection|array $tiers): array|null{
+    protected static function getTier(int|float $quantity, Collection|array $tiers): array|null
+    {
         $tiers = self::sortTiers($tiers);
         $tier = null;
-        foreach($tiers->toArray() as $t){
-            if($quantity <= $t['max']){
+        foreach ($tiers->toArray() as $t) {
+            if ($quantity <= $t['max']) {
                 $tier = $t;
                 break;
             }
         }
-        if(!$tier){
+        if (!$tier) {
             $tier = $tiers->firstWhere('max', self::INFINITY);
         }
 
@@ -105,18 +110,19 @@ class PriceCalculator
      * @param \Illuminate\Support\Collection|array $tiers
      * @return array
      */
-    protected static function getTiers(int|float $quantity, Collection|array $tiers): array|null{
+    protected static function getTiers(int|float $quantity, Collection|array $tiers): array|null
+    {
         $tiers = self::sortTiers($tiers);
         $t = [];
-        $max_tier_value = $tiers->map(fn($tier) => $tier['max'])->max();
+        $max_tier_value = $tiers->map(fn ($tier) => $tier['max'])->max();
         $last = 0;
-        foreach($tiers->toArray() as $tier){
+        foreach ($tiers->toArray() as $tier) {
             $max = $tier['max'];
-            if(
+            if (
                 (($max != self::INFINITY) && ($quantity >= $max)) ||
                 (($max != self::INFINITY) && ($quantity <= $max && $quantity >= $last)) ||
                 (($max == self::INFINITY) && ($quantity > $max_tier_value))
-            ){
+            ) {
                 array_push($t, $tier);
             }
             $last = $max;
@@ -132,20 +138,20 @@ class PriceCalculator
      * @param \Illuminate\Support\Collection|array $tiers
      * @return \Illuminate\Support\Collection
      */
-    protected static function sortTiers(Collection|array $tiers): Collection{
+    protected static function sortTiers(Collection|array $tiers): Collection
+    {
         $inf = [self::INFINITY, 'infinity', 'inf'];
-        return collect($tiers)->sort(function($a, $b) use($inf){
-            if(in_array($a['max'], $inf)) return 1;
-            if(in_array($b['max'], $inf)) return -1;
+        return collect($tiers)->sort(function ($a, $b) use ($inf) {
+            if (in_array($a['max'], $inf)) return 1;
+            if (in_array($b['max'], $inf)) return -1;
             return (float)$a['max'] - (float)$b['max'];
         })
-        ->map(function($tier){
-            $tier['unit_amount'] = (float)data_get($tier, 'unit_amount', 0);
-            $tier['flat_amount'] = (float)data_get($tier, 'flat_amount', 0);
-            $tier['max'] = (float)data_get($tier, 'max')?: self::INFINITY;
-            return $tier;
-        })
-        ->values();
+            ->map(function ($tier) {
+                $tier['unit_amount'] = (float)data_get($tier, 'unit_amount', 0);
+                $tier['flat_amount'] = (float)data_get($tier, 'flat_amount', 0);
+                $tier['max'] = (float)data_get($tier, 'max') ?: self::INFINITY;
+                return $tier;
+            })
+            ->values();
     }
 }
-

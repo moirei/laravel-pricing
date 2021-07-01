@@ -6,6 +6,7 @@ build
 vendor
 tests/TestSupport/temp
 tests/temp
+composer.phar
 composer.lock
 phpunit.xml
 .env

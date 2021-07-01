@@ -9,24 +9,24 @@ class PriceCalculatorTest extends TestCase
 {
     protected $tiers = [
         [
-          'max' => 5,
-          'unit_amount' => 5,
+            'max' => 5,
+            'unit_amount' => 5,
         ],
         [
-          'max' => 10,
-          'unit_amount' => 4,
+            'max' => 10,
+            'unit_amount' => 4,
         ],
         [
-          'max' => 15,
-          'unit_amount' => 3,
+            'max' => 15,
+            'unit_amount' => 3,
         ],
         [
-          'max' => 20,
-          'unit_amount' => 2,
+            'max' => 20,
+            'unit_amount' => 2,
         ],
         [
-          'max' => 'infinity',
-          'unit_amount' => 1,
+            'max' => 'infinity',
+            'unit_amount' => 1,
         ],
     ];
 

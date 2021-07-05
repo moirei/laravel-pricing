@@ -6,3 +6,4 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ## 1.0.1
 * fix: bug access pricing data via the trait method
 * fix: CastPricing array decode
+* fix: Pricing data to remain null by default when not set

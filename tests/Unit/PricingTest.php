@@ -80,6 +80,9 @@ class PricingTest extends TestCase
     function confirm_pricing_data()
     {
         $pricing = Pricing::make()->data(['currency' => 'AUD']);
+        $tiers_count = $pricing->data('meta.tiers_count', 4);
         $this->assertEquals('AUD', $pricing->data()->get('currency'));
+        $this->assertEquals(4, $pricing->data('meta.tiers_count'));
+        $this->assertEquals(4, $tiers_count);
     }
 }

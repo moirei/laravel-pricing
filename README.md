@@ -1,6 +1,8 @@
-# Complex Pricing
+# Laravel Pricing
 
 Manage complex pricing for your eloquent models.
+
+To use in frontend or Node.js, checkout [moirei/complex-pricing](https://github.com/moirei/complex-pricing).
 
 
 

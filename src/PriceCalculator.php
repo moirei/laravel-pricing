@@ -64,9 +64,11 @@ class PriceCalculator
 
         foreach ($tiers as $tier) {
             $max = data_get($tier, 'max');
+            if ($is_infinite = self::isInfinite($max)) $max = self::INFINITY;
+
             if ($index++ == 0) {
                 $x = $quantity < $max ? $quantity : $max;
-            } elseif ($max == self::INFINITY) {
+            } elseif ($is_infinite) {
                 $x = $quantity - $max_tier_value;
             } else {
                 $x = ($quantity < $max ? $quantity : $max) - $last;
@@ -91,13 +93,13 @@ class PriceCalculator
         $tiers = self::sortTiers($tiers);
         $tier = null;
         foreach ($tiers->toArray() as $t) {
-            if ($quantity <= $t['max']) {
+            if ($quantity <= (self::isInfinite($t['max']) ? self::INFINITY : $t['max'])) {
                 $tier = $t;
                 break;
             }
         }
         if (!$tier) {
-            $tier = $tiers->firstWhere('max', self::INFINITY);
+            $tier = $tiers->first(fn ($tier) => self::isInfinite($tier['max']));
         }
 
         return $tier;
@@ -106,7 +108,7 @@ class PriceCalculator
     /**
      * Get the tiers of a given amount
      *
-     * @param int|float $value
+     * @param int|float $quantity
      * @param \Illuminate\Support\Collection|array $tiers
      * @return array
      */
@@ -114,14 +116,14 @@ class PriceCalculator
     {
         $tiers = self::sortTiers($tiers);
         $t = [];
-        $max_tier_value = $tiers->map(fn ($tier) => $tier['max'])->max();
+        $max_tier_value = $tiers->map(fn ($tier) => self::isInfinite($tier['max']) ? self::INFINITY : $tier['max'])->max();
         $last = 0;
         foreach ($tiers->toArray() as $tier) {
-            $max = $tier['max'];
+            $max = self::isInfinite($tier['max']) ? self::INFINITY : $tier['max'];
             if (
-                (($max != self::INFINITY) && ($quantity >= $max)) ||
-                (($max != self::INFINITY) && ($quantity <= $max && $quantity >= $last)) ||
-                (($max == self::INFINITY) && ($quantity > $max_tier_value))
+                ((!self::isInfinite($max)) && ($quantity >= $max)) ||
+                ((!self::isInfinite($max)) && ($quantity <= $max && $quantity >= $last)) ||
+                ((self::isInfinite($max)) && ($quantity > $max_tier_value))
             ) {
                 array_push($t, $tier);
             }
@@ -140,10 +142,9 @@ class PriceCalculator
      */
     protected static function sortTiers(Collection|array $tiers): Collection
     {
-        $inf = [self::INFINITY, 'infinity', 'inf'];
-        return collect($tiers)->sort(function ($a, $b) use ($inf) {
-            if (in_array($a['max'], $inf)) return 1;
-            if (in_array($b['max'], $inf)) return -1;
+        return collect($tiers)->sort(function ($a, $b) {
+            if (self::isInfinite($a['max'])) return 1;
+            if (self::isInfinite($b['max'])) return -1;
             return (float)$a['max'] - (float)$b['max'];
         })
             ->map(function ($tier) {
@@ -153,5 +154,17 @@ class PriceCalculator
                 return $tier;
             })
             ->values();
+    }
+
+    /**
+     * Check if the given value is Infinite type
+     *
+     * @param {any} value
+     * @return bool
+     */
+    protected static function isInfinite($value): bool
+    {
+        $inf = [self::INFINITY, "infinity", "inf"];
+        return in_array($value, $inf);
     }
 }

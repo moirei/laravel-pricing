@@ -23,11 +23,17 @@ module.exports = {
       {
         title: "Pricing Models",
         path: "/pricing",
+        collapsable: false,
       },
       {
         title: "Usage",
-        collapsable: true,
-        children: ["/usage/eloquent", "/usage/stand-alone", "/usage/complex"],
+        collapsable: false,
+        children: [
+          "/usage/eloquent",
+          "/usage/stand-alone",
+          "/usage/complex",
+          "/usage/data",
+        ],
       },
     ],
     nav: [{ text: "Home", link: "/" }],

@@ -48,7 +48,7 @@ class Pricing implements Arrayable
      *
      * @var array
      */
-    protected array $data;
+    protected array|null $data = null;
 
     /**
      * Construct a new instance
@@ -62,7 +62,7 @@ class Pricing implements Arrayable
         }
         $this->model(data_get($attributes, 'model', self::MODEL_STANDARD));
         $this->tiers(data_get($attributes, 'tiers', []));
-        $this->data(data_get($attributes, 'data', []));
+        $this->data(data_get($attributes, 'data'));
         $this->unitAmount(data_get($attributes, 'unit_amount', 0));
         $this->units(data_get($attributes, 'units', 1));
     }
@@ -214,7 +214,6 @@ class Pricing implements Arrayable
      * Get the pricing value
      *
      * @param int|float $amount
-     * @param string $channel
      * @return float
      */
     public function price(int|float $amount = 1): float
@@ -231,16 +230,27 @@ class Pricing implements Arrayable
     }
 
     /**
-     * Get or set tiers
+     * Get or set miscellaneous data
      *
-     * @param Illuminate\Support\Collection|array|null $data
+     * @param Illuminate\Support\Collection|array|null $key
+     * @param mix $value
      * @return \MOIREI\Pricing\Pricing|Collection
      */
-    public function data(Collection|array $data = null)
+    public function data(Collection|array|string $key = null, $value = null)
     {
-        if (is_null($data)) return collect($this->data);
+        if (!is_null($value)) {
+            if (empty($this->data)) {
+                $this->data = [];
+            }
+            Arr::set($this->data, $key, ($value instanceof Collection) ? $value->toArray() : $value);
+            return $value;
+        }
 
-        $this->data = collect($data)->toArray();
+        if (is_null($key)) return collect($this->data);
+        if (is_string($key)) return Arr::get($this->data, $key);
+
+        $this->data = collect($key)->toArray();
+
         return $this;
     }
 

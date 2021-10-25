@@ -29,9 +29,12 @@ module.exports = {
         title: "Usage",
         collapsable: false,
         children: [
-          "/usage/eloquent",
+          "/usage/eloquent-castpricing",
+          "/usage/eloquent-castmultipricing",
+          "/usage/eloquent-haspricing",
           "/usage/stand-alone",
           "/usage/complex",
+          "/usage/utils",
           "/usage/data",
         ],
       },

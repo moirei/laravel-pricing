@@ -2,12 +2,10 @@
 
 namespace MOIREI\Pricing\Tests\Unit;
 
-use MOIREI\Pricing\Tests\TestCase;
 use MOIREI\Pricing\Pricing;
 
-class PricingTest extends TestCase
-{
-    protected $tiers = [
+beforeEach(function () {
+    $this->tiers = [
         [
             'max' => 5,
             'unit_amount' => 5,
@@ -29,60 +27,52 @@ class PricingTest extends TestCase
             'unit_amount' => 1,
         ],
     ];
+});
 
-    /** @test */
-    function make_standard_pricing()
-    {
-        $pricing = Pricing::make([
-            'model' => 'standard',
-            'unit_amount' => 25,
-        ]);
-        $this->assertEquals(100.0, $pricing->price(4));
-    }
+it('should be a valid standard pricing', function () {
+    $pricing = Pricing::make([
+        'model' => 'standard',
+        'unit_amount' => 25,
+    ]);
+    expect($pricing->price(4))->toEqual(100.0);
+});
 
-    /** @test */
-    function make_package_pricing()
-    {
-        $pricing = Pricing::make([
-            'model' => 'package',
-            'unit_amount' => 25,
-            'units' => 5,
-        ]);
-        $this->assertEquals(25.0, $pricing->price(4));
-        $this->assertEquals(50.0, $pricing->price(8));
-    }
+it('should be a valid package pricing', function () {
+    $pricing = Pricing::make([
+        'model' => 'package',
+        'unit_amount' => 25,
+        'units' => 5,
+    ]);
+    expect($pricing->price(4))->toEqual(25.0);
+    expect($pricing->price(8))->toEqual(50.0);
+});
 
-    /** @test */
-    function make_volume_pricing()
-    {
-        $pricing = Pricing::make([
-            'model' => 'volume',
-            'tiers' => $this->tiers,
-        ]);
-        $this->assertEquals(5.0, $pricing->price());
-        $this->assertEquals(25.0, $pricing->price(5));
-        $this->assertEquals(24.0, $pricing->price(6));
-    }
+it('should be a valid volume pricing', function () {
+    $pricing = Pricing::make([
+        'model' => 'volume',
+        'tiers' => $this->tiers,
+    ]);
+    expect($pricing->price())->toEqual(5.0);
+    expect($pricing->price(1))->toEqual(5.0);
+    expect($pricing->price(5))->toEqual(25.0);
+    expect($pricing->price(6))->toEqual(24.0);
+});
 
-    /** @test */
-    function make_graduated_pricing()
-    {
-        $pricing = Pricing::make([
-            'model' => 'graduated',
-            'tiers' => $this->tiers,
-        ]);
-        $this->assertEquals(5.0, $pricing->price());
-        $this->assertEquals(25.0, $pricing->price(5));
-        $this->assertEquals(29.0, $pricing->price(6));
-    }
+it('should be a valid graduated pricing', function () {
+    $pricing = Pricing::make([
+        'model' => 'graduated',
+        'tiers' => $this->tiers,
+    ]);
+    expect($pricing->price())->toEqual(5.0);
+    expect($pricing->price(1))->toEqual(5.0);
+    expect($pricing->price(5))->toEqual(25.0);
+    expect($pricing->price(6))->toEqual(29.0);
+});
 
-    /** @test */
-    function confirm_pricing_data()
-    {
-        $pricing = Pricing::make()->data(['currency' => 'AUD']);
-        $tiers_count = $pricing->data('meta.tiers_count', 4);
-        $this->assertEquals('AUD', $pricing->data()->get('currency'));
-        $this->assertEquals(4, $pricing->data('meta.tiers_count'));
-        $this->assertEquals(4, $tiers_count);
-    }
-}
+it('should be have valid miscellaneous data', function () {
+    $pricing = Pricing::make()->data(['currency' => 'AUD']);
+    $tiers_count = $pricing->data('meta.tiers_count', 4);
+    expect($pricing->data()->get('currency'))->toEqual('AUD');
+    expect($pricing->data('meta.tiers_count'))->toEqual(4);
+    expect($tiers_count)->toEqual(4);
+});

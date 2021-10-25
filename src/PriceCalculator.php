@@ -88,7 +88,7 @@ class PriceCalculator
      * @param \Illuminate\Support\Collection|array $tiers
      * @return array|null
      */
-    protected static function getTier(int|float $quantity, Collection|array $tiers): array|null
+    public static function getTier(int|float $quantity, Collection|array $tiers): array|null
     {
         $tiers = self::sortTiers($tiers);
         $tier = null;
@@ -112,7 +112,7 @@ class PriceCalculator
      * @param \Illuminate\Support\Collection|array $tiers
      * @return array
      */
-    protected static function getTiers(int|float $quantity, Collection|array $tiers): array|null
+    public static function getTiers(int|float $quantity, Collection|array $tiers): array|null
     {
         $tiers = self::sortTiers($tiers);
         $t = [];
@@ -131,6 +131,16 @@ class PriceCalculator
         }
 
         return $t;
+    }
+
+    /**
+     * Get tier max
+     *
+     * @return float
+     */
+    public static function tierMax(array $tiers)
+    {
+        return max(array_map(fn ($tier) => static::isInfinite($tier['max']) ? 0 : $tier['max'], $tiers));
     }
 
     /**

@@ -1,6 +1,8 @@
 # Complex Usage
 
-You can easily implement multi-currency or locale with price naming.
+With the use of the `CastMultiPricing` cast and `HasPricing` trait, you can easily implement multi-currency or locale with price naming.
+
+Here is an example using the `HasPricing` trait.
 
 ## Set Pricing
 

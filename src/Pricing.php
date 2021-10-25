@@ -134,7 +134,7 @@ class Pricing implements Arrayable
      * @param float $unit_amount
      * @return \MOIREI\Pricing\Pricing
      */
-    public function unitAmount(float $unit_amount)
+    public function unitAmount(float $unit_amount = null)
     {
         if (is_null($unit_amount)) return $this->unit_amount;
 
@@ -148,7 +148,7 @@ class Pricing implements Arrayable
      * @param float $units
      * @return \MOIREI\Pricing\Pricing
      */
-    public function units(float $units)
+    public function units(float $units = null)
     {
         if (is_null($units)) return $this->units;
 
@@ -252,6 +252,212 @@ class Pricing implements Arrayable
         $this->data = collect($key)->toArray();
 
         return $this;
+    }
+
+    /**
+     * Check is pricing is standard type
+     *
+     * @return bool
+     */
+    public function isStandard(): bool
+    {
+        return $this->model === self::MODEL_STANDARD;
+    }
+
+    /**
+     * Check is pricing is package type
+     *
+     * @return bool
+     */
+    public function isPackage(): bool
+    {
+        return $this->model === self::MODEL_PACKAGE;
+    }
+
+    /**
+     * Check is pricing is volume type
+     *
+     * @return bool
+     */
+    public function isVolume(): bool
+    {
+        return $this->model === self::MODEL_VOLUME;
+    }
+
+    /**
+     * Check is pricing is graduated type
+     *
+     * @return bool
+     */
+    public function isGraduated(): bool
+    {
+        return $this->model === self::MODEL_GRADUATED;
+    }
+
+    /**
+     * Check is pricing is tiered
+     *
+     * @return bool
+     */
+    public function isTiered(): bool
+    {
+        return $this->isVolume() || $this->isGraduated();
+    }
+
+    /**
+     * Summarise pricing
+     *
+     * @param float $quantity
+     * @param string $qualifier
+     * @param string $unit
+     * @param bool $prependQualifier
+     * @param bool $prependUnit
+     * @param bool $plurableUnit
+     * @return array
+     */
+    public function summary(
+        float $quantity = null,
+        string $qualifier = '',
+        string $unit = 'unit',
+        bool $prependQualifier  = true,
+        bool $prependUnit = false,
+        bool $plurableUnit = true,
+    ): array {
+        $unit_amount = $this->unit_amount;
+        $summaries = [];
+
+        if ($this->isStandard()) {
+            $summaries[] = Helpers::join(
+                Helpers::appendUnit($unit_amount, $qualifier, $prependQualifier),
+                'per',
+                $unit,
+            );
+        } elseif ($this->isPackage()) {
+            if ($this->units > 1) $unit = Str::plural($unit);
+            $summaries[] = Helpers::join(
+                Helpers::appendUnit($unit_amount, $qualifier, $prependQualifier),
+                'for every',
+                Helpers::appendUnit($this->units, $unit, $prependUnit, $plurableUnit, true),
+            );
+        } elseif ($this->isVolume()) {
+            if ($quantity) {
+                $tier = PriceCalculator::getTier($quantity, $this->tiers);
+                $unit_amount = floatval($tier['unit_amount']);
+                $flat_amount = empty($tier['flat_amount']) ? '' : $tier['flat_amount'];
+                $total = ($unit_amount * $quantity) + ($flat_amount ? $flat_amount : 0);
+                $summaries[] = Helpers::join(
+                    Helpers::appendUnit($quantity, $unit, $prependUnit, $plurableUnit, true),
+                    'x',
+                    Helpers::appendUnit($unit_amount, $qualifier, $prependQualifier),
+                    $flat_amount ? '+' : null,
+                    $flat_amount ? Helpers::appendUnit($flat_amount, $qualifier, $prependQualifier) : null,
+                    '=',
+                    Helpers::appendUnit($total, $qualifier, $prependQualifier),
+                );
+            } else {
+                $length = count($this->tiers);
+                foreach ($this->tiers as $i => $tier) {
+                    $max = floatval($tier['max']);
+                    $unit_amount = floatval($tier['unit_amount']);
+                    $flat_amount = empty($tier['flat_amount']) ? '' : $tier['flat_amount'];
+                    if ($i == 0) {
+                        $total = ($unit_amount * $max) + ($flat_amount ? $flat_amount : 0);
+                        $summaries[] = Helpers::join(
+                            'The first',
+                            Helpers::appendUnit($max, $unit, $prependUnit, $plurableUnit, true),
+                            '@',
+                            Helpers::appendUnit($unit_amount, $qualifier, $prependQualifier),
+                            'per',
+                            $unit,
+                            $flat_amount ? '+' : null,
+                            $flat_amount ? Helpers::appendUnit($flat_amount, $qualifier, $prependQualifier) : null,
+                        );
+                    } else if ($i == $length - 1) { // is last
+                        $total = ($unit_amount * $max) + ($flat_amount ? $flat_amount : 0);
+                        $summaries[] = Helpers::join(
+                            'From',
+                            Helpers::appendUnit($this->tiers[$i - 1]['max'], $unit, $prependUnit, $plurableUnit, true),
+                            'and above',
+                            '@',
+                            Helpers::appendUnit($unit_amount, $qualifier, $prependQualifier),
+                            'per',
+                            $unit,
+                            $flat_amount ? '+' : null,
+                            $flat_amount ? Helpers::appendUnit($flat_amount, $qualifier, $prependQualifier) : null,
+                        );
+                    } else {
+                        $total = ($unit_amount * $max) + ($flat_amount ? $flat_amount : 0);
+                        $summaries[] = Helpers::join(
+                            'From',
+                            floatval($this->tiers[$i - 1]['max']),
+                            'to',
+                            Helpers::appendUnit($max, $unit, $prependUnit, $plurableUnit, true),
+                            '@',
+                            Helpers::appendUnit($unit_amount, $qualifier, $prependQualifier),
+                            'per',
+                            $unit,
+                            $flat_amount ? '+' : null,
+                            $flat_amount ? Helpers::appendUnit($flat_amount, $qualifier, $prependQualifier) : null,
+                        );
+                    }
+                }
+            }
+        } elseif ($this->isGraduated()) {
+            if (!$quantity) {
+                $quantity = PriceCalculator::tierMax($this->tiers);
+            }
+            $tiers = PriceCalculator::getTiers($quantity, $this->tiers);
+            $length = count($tiers);
+
+            foreach ($tiers as $i => $tier) {
+                $max = $tier['max'];
+                $unit_amount = $tier['unit_amount'];
+                $flat_amount = empty($tier['flat_amount']) ? '' : $tier['flat_amount'];
+
+                if ($i == 0) {
+                    $total = ($unit_amount * $max) + ($flat_amount ? $flat_amount : 0);
+                    $total = number_format($total, 2);
+
+                    $summaries[] = Helpers::join(
+                        'First',
+                        Helpers::appendUnit($max, $unit, $prependUnit, $plurableUnit, true),
+                        'x',
+                        Helpers::appendUnit($unit_amount, $qualifier, $prependQualifier),
+                        $flat_amount ? '+' : null,
+                        $flat_amount ? Helpers::appendUnit($flat_amount, $qualifier, $prependQualifier) : null,
+                        '=',
+                        Helpers::appendUnit($total, $qualifier, $prependQualifier),
+                    );
+                } elseif ($i == $length - 1) {
+                    $total = $unit_amount + ($flat_amount ? $flat_amount : 0);
+                    $total = number_format($total, 2);
+                    $summaries[] = Helpers::join(
+                        'Next 1 x',
+                        Helpers::appendUnit($unit_amount, $qualifier, $prependQualifier, true),
+                        $flat_amount ? '+' : null,
+                        $flat_amount ? Helpers::appendUnit($flat_amount, $qualifier, $prependQualifier) : null,
+                        '=',
+                        Helpers::appendUnit($total, $qualifier, $prependQualifier),
+                    );
+                } else {
+                    $quantity = $max - floatval($tiers[$i - 1]['max']);
+                    $total = ($unit_amount * $quantity) + ($flat_amount ? $flat_amount : 0);
+                    $total = number_format($total, 2);
+                    $summaries[] = Helpers::join(
+                        'Next',
+                        Helpers::appendUnit($quantity, $unit, $prependUnit, $plurableUnit, true),
+                        'x',
+                        Helpers::appendUnit($unit_amount, $qualifier, $prependQualifier),
+                        $flat_amount ? '+' : null,
+                        $flat_amount ? Helpers::appendUnit($flat_amount, $qualifier, $prependQualifier) : null,
+                        '=',
+                        Helpers::appendUnit($total, $qualifier, $prependQualifier),
+                    );
+                }
+            }
+        }
+
+        return $summaries;
     }
 
     /**

@@ -69,6 +69,11 @@ Please see [CHANGELOG](./CHANGELOG.md).
 
 - [Augustus Okoye](https://github.com/augustusnaz)
 
+## Tests
+
+```php
+composer run test
+```
 
 
 ## License

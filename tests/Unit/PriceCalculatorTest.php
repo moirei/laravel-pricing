@@ -2,12 +2,10 @@
 
 namespace MOIREI\Pricing\Tests\Unit;
 
-use MOIREI\Pricing\Tests\TestCase;
 use MOIREI\Pricing\PriceCalculator;
 
-class PriceCalculatorTest extends TestCase
-{
-    protected $tiers = [
+beforeEach(function () {
+    $this->tiers = [
         [
             'max' => 5,
             'unit_amount' => 5,
@@ -29,80 +27,28 @@ class PriceCalculatorTest extends TestCase
             'unit_amount' => 1,
         ],
     ];
+});
 
-    /** @test */
-    function package_value_1()
-    {
-        // $25 for every 5 units
-        // 4 units should be $25
-        $this->assertEquals(25.0, PriceCalculator::package(4, 25, 5));
-    }
+it('calculates valid package pricing', function () {
+    expect(PriceCalculator::package(4, 25, 5))->toEqual(25.0);
 
-    /** @test */
-    function package_value_2()
-    {
-        // $25 for every 5 units
-        // 8 units should be $50
-        $this->assertEquals(50.0, PriceCalculator::package(8, 25, 5));
-    }
+    // $25 for every 5 units
+    // 8 units should be $50
+    expect(PriceCalculator::package(8, 25, 5))->toEqual(50.0);
+});
 
-    /** @test */
-    function volume_value_1()
-    {
-        $this->assertEquals(5.0, PriceCalculator::volume(1, $this->tiers));
-    }
+it('calculates valid volume pricing', function () {
+    expect(PriceCalculator::volume(1, $this->tiers))->toEqual(5.0);
+    expect(PriceCalculator::volume(5, $this->tiers))->toEqual(25.0);
+    expect(PriceCalculator::volume(6, $this->tiers))->toEqual(24.0);
+    expect(PriceCalculator::volume(20, $this->tiers))->toEqual(40.0);
+    expect(PriceCalculator::volume(25, $this->tiers))->toEqual(25.0);
+});
 
-    /** @test */
-    function volume_value_5()
-    {
-        $this->assertEquals(25.0, PriceCalculator::volume(5, $this->tiers));
-    }
-
-    /** @test */
-    function volume_value_6()
-    {
-        $this->assertEquals(24.0, PriceCalculator::volume(6, $this->tiers));
-    }
-
-    /** @test */
-    function volume_value_20()
-    {
-        $this->assertEquals(40.0, PriceCalculator::volume(20, $this->tiers));
-    }
-
-    /** @test */
-    function volume_value_25()
-    {
-        $this->assertEquals(25.0, PriceCalculator::volume(25, $this->tiers));
-    }
-
-    /** @test */
-    function graduated_value_1()
-    {
-        $this->assertEquals(5.0, PriceCalculator::graduated(1, $this->tiers));
-    }
-
-    /** @test */
-    function graduated_value_5()
-    {
-        $this->assertEquals(25.0, PriceCalculator::graduated(5, $this->tiers));
-    }
-
-    /** @test */
-    function graduated_value_6()
-    {
-        $this->assertEquals(29.0, PriceCalculator::graduated(6, $this->tiers));
-    }
-
-    /** @test */
-    function graduated_value_20()
-    {
-        $this->assertEquals(70.0, PriceCalculator::graduated(20, $this->tiers));
-    }
-
-    /** @test */
-    function graduated_value_25()
-    {
-        $this->assertEquals(75.0, PriceCalculator::graduated(25, $this->tiers));
-    }
-}
+it('calculates valid graduated pricing', function () {
+    expect(PriceCalculator::graduated(1, $this->tiers))->toEqual(5.0);
+    expect(PriceCalculator::graduated(5, $this->tiers))->toEqual(25.0);
+    expect(PriceCalculator::graduated(6, $this->tiers))->toEqual(29.0);
+    expect(PriceCalculator::graduated(20, $this->tiers))->toEqual(70.0);
+    expect(PriceCalculator::graduated(25, $this->tiers))->toEqual(75.0);
+});

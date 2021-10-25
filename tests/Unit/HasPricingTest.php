@@ -7,21 +7,8 @@ use MOIREI\Pricing\Pricing;
 use MOIREI\Pricing\HasPricing;
 use MOIREI\Pricing\Tests\TestCase;
 
-class Product extends Model
-{
-    use HasPricing;
-
-    protected $fillable = [
-        'pricing'
-    ];
-    protected $attributes = [
-        'pricing' => null
-    ];
-}
-
-class HasPricingTest extends TestCase
-{
-    protected $tiers = [
+beforeEach(function () {
+    $this->tiers = [
         [
             'max' => 5,
             'unit_amount' => 5,
@@ -44,57 +31,62 @@ class HasPricingTest extends TestCase
         ],
     ];
 
-    /** @test */
-    function set_pricing_from_fillables()
+    $this->product = new class extends Model
     {
-        $product = (new Product)->fill([
-            'pricing' => [
-                'default' => [
-                    'model' => Pricing::MODEL_VOLUME,
-                    'tiers' => $this->tiers,
-                ]
-            ]
-        ]);
-        $this->assertEquals(5.0, $product->price);
-    }
+        use HasPricing;
+    
+        protected $fillable = [
+            'pricing'
+        ];
+        protected $attributes = [
+            'pricing' => null
+        ];
+    };
+});
 
-    /** @test */
-    function set_volume_pricing_from_method()
-    {
-        $product = new Product;
-        $product->pricing([
-            'model' => Pricing::MODEL_VOLUME,
-            'tiers' => $this->tiers,
-        ]);
-        $this->assertEquals(5.0, $product->price);
-    }
-
-    /** @test */
-    function set_standard_pricing_from_method()
-    {
-        $product = new Product;
-        $product->pricing(5);
-        $this->assertEquals(5.0, $product->price);
-        $this->assertEquals(10.0, $product->price(2));
-    }
-
-    /** @test */
-    function set_multiple_pricing_from_method()
-    {
-        $product = new Product;
-        $product->pricing([
+it('should set pricing from array', function () {
+    $this->product->fill([
+        'pricing' => [
             'default' => [
-                'model' => Pricing::MODEL_STANDARD,
-                'unit_amount' => 25,
-            ],
-            'other' => [
-                'model' => Pricing::MODEL_PACKAGE,
-                'unit_amount' => 25,
-                'units' => 5,
-            ],
-        ]);
-        $this->assertEquals(100.0, $product->price(4));
-        $this->assertEquals(25.0, $product->price(4, 'other'));
-        $this->assertEquals(50.0, $product->price(8, 'other'));
-    }
-}
+                'model' => Pricing::MODEL_VOLUME,
+                'tiers' => $this->tiers,
+            ]
+        ]
+    ]);
+
+    expect($this->product->price)->toEqual(5.0);
+});
+
+it('should set volume pricing from method', function () {
+    $this->product->pricing([
+        'model' => Pricing::MODEL_VOLUME,
+        'tiers' => $this->tiers,
+    ]);
+
+    expect($this->product->price)->toEqual(5.0);
+});
+
+it('should set standard pricing from method', function () {
+    $this->product->pricing(5);
+
+    expect($this->product->price)->toEqual(5.0);
+    expect($this->product->price(2))->toEqual(10.0);
+});
+
+it('should set multiple pricing from method', function () {
+    $this->product->pricing([
+        'default' => [
+            'model' => Pricing::MODEL_STANDARD,
+            'unit_amount' => 25,
+        ],
+        'other' => [
+            'model' => Pricing::MODEL_PACKAGE,
+            'unit_amount' => 25,
+            'units' => 5,
+        ],
+    ]);
+
+    expect($this->product->price(4))->toEqual(100.0);
+    expect($this->product->price(4, 'other'))->toEqual(25.0);
+    expect($this->product->price(8, 'other'))->toEqual(50.0);
+});

@@ -1,4 +1,16 @@
-# Eloquent
+# Eloquent: HasPricing Trait
+
+```php
+use Illuminate\Database\Eloquent\Model;
+use MOIREI\Pricing\HasPricing;
+
+class Product extends Model
+{
+    use HasPricing;
+
+    ...
+}
+```
 
 ## Set Pricing
 ### Standard Pricing

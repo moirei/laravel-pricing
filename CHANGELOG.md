@@ -7,3 +7,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * fix: bug access pricing data via the trait method
 * fix: CastPricing array decode
 * fix: Pricing data to remain null by default when not set
+
+## 1.1.0
+* feat: switch to [Pest](https://pestphp.com/docs/plugins/laravel) framework for tests
+* feat: quick methods for pricing model check; `isStandard`, `isPackage`, `isVolume` and `isGraduated`
+* fix: CastPricing to cast attributes per single Pricing instance
+* feat: CastMultiPricing to cast multiple Pricing instances
+* feat: add pricing summaries

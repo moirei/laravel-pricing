@@ -14,3 +14,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * fix: CastPricing to cast attributes per single Pricing instance
 * feat: CastMultiPricing to cast multiple Pricing instances
 * feat: add pricing summaries
+
+## 1.1.1
+* feat: make Pricing array accessible

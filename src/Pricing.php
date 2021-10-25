@@ -7,8 +7,9 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Illuminate\Contracts\Support\Arrayable;
+use ArrayAccess;
 
-class Pricing implements Arrayable
+class Pricing implements Arrayable, ArrayAccess
 {
     public const MODEL_STANDARD = 'standard';
     public const MODEL_PACKAGE = 'package';
@@ -468,6 +469,59 @@ class Pricing implements Arrayable
     public function __get($key)
     {
         return Arr::get($this->data, $key);
+    }
+
+    /**
+     * Determine if the given attribute exists.
+     *
+     * @param  mixed  $offset
+     * @return bool
+     */
+    #[\ReturnTypeWillChange]
+    public function offsetExists($offset)
+    {
+        return in_array($offset, [
+            'model', 'tiers',
+            'unit_amount', 'units',
+            'data',
+        ]);
+    }
+
+    /**
+     * Get the value for a given offset.
+     *
+     * @param  mixed  $offset
+     * @return mixed
+     */
+    #[\ReturnTypeWillChange]
+    public function offsetGet($offset)
+    {
+        return $this->$offset;
+    }
+
+    /**
+     * Set the value for a given offset.
+     *
+     * @param  mixed  $offset
+     * @param  mixed  $value
+     * @return void
+     */
+    #[\ReturnTypeWillChange]
+    public function offsetSet($offset, $value)
+    {
+        //
+    }
+
+    /**
+     * Unset the value for a given offset.
+     *
+     * @param  mixed  $offset
+     * @return void
+     */
+    #[\ReturnTypeWillChange]
+    public function offsetUnset($offset)
+    {
+        //
     }
 
     /**

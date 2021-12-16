@@ -506,7 +506,6 @@ class Pricing implements Arrayable, ArrayAccess
      * @param  mixed  $value
      * @return void
      */
-    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         //
@@ -518,7 +517,6 @@ class Pricing implements Arrayable, ArrayAccess
      * @param  mixed  $offset
      * @return void
      */
-    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         //

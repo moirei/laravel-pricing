@@ -32,6 +32,6 @@ class CastPricing implements CastsAttributes
      */
     public function set($model, $key, $value, $attributes)
     {
-        return [$key => json_encode($value)];
+        return [$key => json_encode($value instanceof Pricing ? $value->toArray() : $value)];
     }
 }

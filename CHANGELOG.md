@@ -17,3 +17,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 1.1.1
 * feat: make Pricing array accessible
+
+## 1.1.2
+* fix: CastPricing setter to accept Pricing object

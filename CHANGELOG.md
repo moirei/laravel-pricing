@@ -20,3 +20,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 1.1.2
 * fix: CastPricing setter to accept Pricing object
+
+## 1.1.3
+* fix: make `Pricing.$unit_amount` and `Pricing.$units` nullable.

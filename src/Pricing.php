@@ -33,16 +33,16 @@ class Pricing implements Arrayable, ArrayAccess
     /**
      * Unit amount for standard and package pricing
      *
-     * @var float|int
+     * @var float|int|null
      */
-    protected float|int $unit_amount;
+    protected float|int|null $unit_amount = null;
 
     /**
      * Unit range for package pricing
      *
-     * @var float|int
+     * @var float|int|null
      */
-    protected float|int $units;
+    protected float|int|null $units = null;
 
     /**
      * Miscellaneous data

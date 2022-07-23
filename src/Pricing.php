@@ -64,7 +64,7 @@ class Pricing implements Arrayable, ArrayAccess
         $this->model(data_get($attributes, 'model', self::MODEL_STANDARD));
         $this->tiers(data_get($attributes, 'tiers', []));
         $this->data(data_get($attributes, 'data'));
-        $this->unitAmount(data_get($attributes, 'unit_amount', 0));
+        $this->unitAmount(data_get($attributes, 'unit_amount'));
         $this->units(data_get($attributes, 'units', 1));
     }
 
@@ -506,7 +506,7 @@ class Pricing implements Arrayable, ArrayAccess
      * @param  mixed  $value
      * @return void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         //
     }
@@ -517,7 +517,7 @@ class Pricing implements Arrayable, ArrayAccess
      * @param  mixed  $offset
      * @return void
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         //
     }

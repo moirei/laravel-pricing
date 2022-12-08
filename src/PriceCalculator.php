@@ -91,6 +91,7 @@ class PriceCalculator
     public static function getTier(int|float $quantity, Collection|array $tiers): array|null
     {
         $tiers = self::sortTiers($tiers);
+        /** @var array|null */
         $tier = null;
         foreach ($tiers->toArray() as $t) {
             if ($quantity <= (self::isInfinite($t['max']) ? self::INFINITY : $t['max'])) {

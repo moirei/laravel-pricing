@@ -1,6 +1,28 @@
 # Utility Methods
 
+## Basic arithmetic
+
+With the `add`, `subtract`, `multiply` and `divide` methods, you can simply modify a pricing object based on a given value.
+
+```php
+$pricing = Pricing::make([
+  'model' => 'standard',
+  'unit_amount' => 25, // $25
+]);
+
+$pricing->price(4); // 100.0
+
+$pricing->add(5); // add $5
+
+$pricing->price(4); // 120.0
+```
+
+Modifying a pricing in this way can be done regardless of the pricing model.
+
+> Note that these methods don't modify flat fees on tiered pricings.
+
 ## Pricing Summaries
+
 Sometimes it's helpful to present to application users the details of a pricing configuration. Especially useful for helping app users understand tiered pricing.
 
 ```php
@@ -11,18 +33,17 @@ $summary = $pricing->summary();
 
 ### Arguments
 
-| Name                | Description                                                  | Type     | Default  |
-| ------------------- | ------------------------------------------------------------ | -------- | -------- |
-| `$quantity`         | Give a pricing quantity to summarise with                    | `float`  | `null`   |
+| Name                | Description                                                                  | Type     | Default  |
+| ------------------- | ---------------------------------------------------------------------------- | -------- | -------- |
+| `$quantity`         | Give a pricing quantity to summarise with                                    | `float`  | `null`   |
 | `$qualifier`        | A qualifier to use against unit amounts. Typical a currency symol, e.g. `$`. | `string` | `""`     |
-| `$unit`             | A unit name for pricing quantity. E.g. `kg`, `g`.            | `string` | `"unit"` |
-| `$prependQualifier` | Indicate whether to prepend the amount qualifier.            | `bool`   | `true`   |
-| `$prependUnit`      | Indicate whether to prepend the quantity unit.               | `bool`   | `false`  |
-| `$plurableUnit`     | Indicate if the unit can be pluralised in the case of more than 1 quantity. | `bool`   | `true`   |
-
-
+| `$unit`             | A unit name for pricing quantity. E.g. `kg`, `g`.                            | `string` | `"unit"` |
+| `$prependQualifier` | Indicate whether to prepend the amount qualifier.                            | `bool`   | `true`   |
+| `$prependUnit`      | Indicate whether to prepend the quantity unit.                               | `bool`   | `false`  |
+| `$plurableUnit`     | Indicate if the unit can be pluralised in the case of more than 1 quantity.  | `bool`   | `true`   |
 
 ### Examples
+
 ```php
 dump(
   $pricing->summary(qualifier: '$')
@@ -58,6 +79,7 @@ array:5 [
 ```
 
 An example with a `volume` pricing:
+
 ```shell
 array:4 [
   0 => "First 5 units x $5 = $25"
@@ -68,4 +90,5 @@ array:4 [
 ```
 
 ## The calculator
+
 The `PriceCalculator` class contains all the underlying methods used for all calculations.

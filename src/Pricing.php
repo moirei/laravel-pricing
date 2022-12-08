@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Illuminate\Contracts\Support\Arrayable;
 use ArrayAccess;
+use RuntimeException;
 
 class Pricing implements Arrayable, ArrayAccess
 {
@@ -215,19 +216,92 @@ class Pricing implements Arrayable, ArrayAccess
      * Get the pricing value
      *
      * @param int|float $amount
+     * @param int    $precision
      * @return float
      */
-    public function price(int|float $amount = 1): float
+    public function price(int|float $amount = 1, int $precision = 4): float
     {
         $model = Str::lower($this->model);
 
         if ($model === self::MODEL_STANDARD) {
-            return PriceCalculator::standard($amount, $this->unit_amount);
+            $value = PriceCalculator::standard($amount, $this->unit_amount);
         } elseif ($model === self::MODEL_PACKAGE) {
-            return PriceCalculator::package($amount, $this->unit_amount, $this->units);
+            $value = PriceCalculator::package($amount, $this->unit_amount, $this->units);
+        } else {
+            $value = PriceCalculator::$model($amount, $this->tiers);
         }
 
-        return PriceCalculator::$model($amount, $this->tiers);
+        return round($value, $precision);
+    }
+
+    /**
+     * Add value to the pricing.
+     * Does not apply to flat_amount.
+     *
+     * @param float $value
+     * @return self
+     */
+    public function add(float $value)
+    {
+        if (is_numeric($this->unit_amount)) {
+            $this->unit_amount += $value;
+        }
+        $this->tiers = array_map(function ($tier) use ($value) {
+            if (is_numeric($tier['unit_amount'])) {
+                $tier['unit_amount'] += $value;
+            }
+            return $tier;
+        }, $this->tiers);
+
+        return $this;
+    }
+
+    /**
+     * Subtract value from the pricing. Calls add method.
+     *
+     * @param float $value
+     * @return self
+     */
+    public function subtract(float $value)
+    {
+        return $this->add($value * -1);
+    }
+
+    /**
+     * Multiply value on the pricing.
+     * Does not apply to flat_amount.
+     *
+     * @param float $value
+     * @return self
+     */
+    public function multiply(float $value)
+    {
+        if (is_numeric($this->unit_amount)) {
+            $this->unit_amount *= $value;
+        }
+        $this->tiers = array_map(function ($tier) use ($value) {
+            if (is_numeric($tier['unit_amount'])) {
+                $tier['unit_amount'] *= $value;
+            }
+            return $tier;
+        }, $this->tiers);
+
+        return $this;
+    }
+
+    /**
+     * Divide pricing by value. Calls add multiply.
+     *
+     * @param float $value
+     * @return self
+     * @throws RuntimeException
+     */
+    public function divide(float $value)
+    {
+        if ($value == 0) {
+            throw new RuntimeException("Cannot devide by 0");
+        }
+        return $this->multiply(1 / $value);
     }
 
     /**

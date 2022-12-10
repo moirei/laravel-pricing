@@ -29,26 +29,82 @@ beforeEach(function () {
             'unit_amount' => 1,
         ],
     ];
+});
 
-    $this->product = new class extends Model
+it('should cast to Pricing instance', function () {
+
+    $attributes = [
+        'pricing' => Pricing::make()->standard(2)
+    ];
+    $product = new class($attributes) extends Model
     {
         protected $fillable = ['pricing'];
-        protected $attributes = [
-            'pricing' => null
-        ];
         protected $casts = [
             'pricing' => CastPricing::class,
         ];
     };
-});
 
-it('should cast to Pricing instance', function () {
-    expect($this->product->pricing)->toBeInstanceOf(Pricing::class);
+    expect($product->pricing)->toBeInstanceOf(Pricing::class);
 });
 
 it('should calculate a valid pricing', function () {
-    $this->product->pricing->graduated($this->tiers);
-    expect($this->product->pricing->price(1))->toEqual(5.0);
-    expect($this->product->pricing->price(5))->toEqual(25.0);
-    expect($this->product->pricing->price(6))->toEqual(29.0);
+    $attributes = [
+        'pricing' => Pricing::make()->standard(2)
+    ];
+    $product = new class($attributes) extends Model
+    {
+        protected $fillable = ['pricing'];
+        protected $casts = [
+            'pricing' => CastPricing::class,
+        ];
+    };
+
+    $product->pricing->graduated($this->tiers);
+    expect($product->pricing->price(1))->toEqual(5.0);
+    expect($product->pricing->price(5))->toEqual(25.0);
+    expect($product->pricing->price(6))->toEqual(29.0);
+});
+
+it('should set pricing using array', function () {
+    $product = new class() extends Model
+    {
+        protected $fillable = ['pricing'];
+        protected $casts = [
+            'pricing' => CastPricing::class,
+        ];
+    };
+
+    expect($product->pricing)->toBeNull();
+
+    $product->pricing = [
+        'model' => 'graduated',
+        'tiers' => $this->tiers
+    ];
+
+    expect($product->pricing)->toBeInstanceOf(Pricing::class);
+    expect($product->pricing->price(1))->toEqual(5.0);
+    expect($product->pricing->price(5))->toEqual(25.0);
+    expect($product->pricing->price(6))->toEqual(29.0);
+});
+
+it('should set pricing using instance', function () {
+    $product = new class() extends Model
+    {
+        protected $fillable = ['pricing'];
+        protected $casts = [
+            'pricing' => CastPricing::class,
+        ];
+    };
+
+    expect($product->pricing)->toBeNull();
+
+    $product->pricing = Pricing::make([
+        'model' => 'graduated',
+        'tiers' => $this->tiers
+    ]);
+
+    expect($product->pricing)->toBeInstanceOf(Pricing::class);
+    expect($product->pricing->price(1))->toEqual(5.0);
+    expect($product->pricing->price(5))->toEqual(25.0);
+    expect($product->pricing->price(6))->toEqual(29.0);
 });

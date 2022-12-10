@@ -33,3 +33,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - feat: add functions to basic arithmetics: `add`, `subtract`, `divide`, `multiply`.
 - feat: add precision option in `price` method
+
+## 1.2.3
+
+- fix: `CastPricing` caster should return `null` for empty pricing attributes

@@ -38,6 +38,9 @@ class CastPricing implements CastsAttributes
         if (is_numeric($value)) {
             $value = Pricing::make()->standard(floatval($value));
         }
-        return [$key => json_encode($value instanceof Pricing ? $value->toArray() : $value)];
+        if ($value instanceof Pricing) {
+            $value = $value->toArray();
+        }
+        return [$key => is_array($value) ? json_encode($value) : null];
     }
 }

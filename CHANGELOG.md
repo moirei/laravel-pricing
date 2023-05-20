@@ -37,3 +37,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ## 1.2.3
 
 - fix: `CastPricing` caster should return `null` for empty pricing attributes
+
+## 1.2.4
+
+- fix: `Pricing` should have a default value of `0` for `unit_amount`
+- fix: `CastPricing` caster should only encode valid value
+- chore: test setting volume pricing using array

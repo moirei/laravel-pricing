@@ -65,7 +65,7 @@ class Pricing implements Arrayable, ArrayAccess
         $this->model(data_get($attributes, 'model', self::MODEL_STANDARD));
         $this->tiers(data_get($attributes, 'tiers', []));
         $this->data(data_get($attributes, 'data'));
-        $this->unitAmount(data_get($attributes, 'unit_amount'));
+        $this->unitAmount(data_get($attributes, 'unit_amount', 0));
         $this->units(data_get($attributes, 'units', 1));
     }
 

@@ -87,6 +87,42 @@ it('should set pricing using array', function () {
     expect($product->pricing->price(6))->toEqual(29.0);
 });
 
+fit('should set volume pricing using array', function () {
+    $product = new class() extends Model
+    {
+        protected $fillable = ['pricing'];
+        protected $casts = [
+            'pricing' => CastPricing::class,
+        ];
+    };
+
+    expect($product->pricing)->toBeNull();
+
+    $product->pricing = [
+        'model' => 'volume',
+        'tiers' => [
+            [
+                'max' => 5,
+                'unit_amount' => 3.6,
+            ],
+            [
+                'max' => 10,
+                'unit_amount' => 3.3,
+            ],
+            [
+                'max' => 'infinity', // or `-1`
+                'unit_amount' => 3.1,
+                'flat_amount' => 1.2,
+            ],
+        ]
+    ];
+
+    expect($product->pricing)->toBeInstanceOf(Pricing::class);
+    expect($product->pricing->price(1))->toEqual(3.6);
+    expect($product->pricing->price(6))->toEqual(19.8);
+    expect($product->pricing->price(11))->toEqual(35.3);
+});
+
 it('should set pricing using instance', function () {
     $product = new class() extends Model
     {

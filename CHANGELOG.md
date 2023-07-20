@@ -43,3 +43,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 - fix: `Pricing` should have a default value of `0` for `unit_amount`
 - fix: `CastPricing` caster should only encode valid value
 - chore: test setting volume pricing using array
+
+## 1.2.5
+
+- feat: Laravel 10 support

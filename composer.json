@@ -24,9 +24,9 @@
         "test-f": "vendor/bin/phpunit --filter"
     },
     "require": {
-        "php": "^7.2|^8.0",
-        "illuminate/database": "^7|^8|^9|^10",
-        "laravel/helpers": "^1.5"
+        "php": "^8.2",
+        "illuminate/database": "^10|^11|^12",
+        "laravel/helpers": "^1.7"
     },
     "autoload": {
         "psr-4": {
@@ -37,10 +37,9 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require-dev": {
-        "pestphp/pest": "^1.21",
-        "pestphp/pest-plugin-laravel": "^1.2",
-        "orchestra/testbench": "^7.5",
-        "thled/pest-plugin-shorthands": "^1.1"
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0",
+        "orchestra/testbench": "^9.0"
     },
     "config": {
         "allow-plugins": {

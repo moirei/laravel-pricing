@@ -47,3 +47,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ## 1.2.5
 
 - feat: Laravel 10 support
+
+## 1.3.0
+
+- feat: Laravel 10, 11, and 12 support
+- chore: require PHP ^8.2
+- chore: upgrade `laravel/helpers` to ^1.7
+- chore: upgrade to Pest 3 and `orchestra/testbench` ^9
+- fix: `CastPricing` and `CastMultiPricing` no longer pass null to `json_decode` (PHP 8.2 deprecation)

@@ -87,7 +87,7 @@ it('should set pricing using array', function () {
     expect($product->pricing->price(6))->toEqual(29.0);
 });
 
-fit('should set volume pricing using array', function () {
+it('should set volume pricing using array', function () {
     $product = new class() extends Model
     {
         protected $fillable = ['pricing'];

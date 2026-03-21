@@ -17,7 +17,7 @@ class CastPricing implements CastsAttributes
      */
     public function get($model, $key, $value, $attributes)
     {
-        $pricing = json_decode($value, true);
+        $pricing = is_string($value) ? json_decode($value, true) : null;
         if (!$pricing) {
             return null;
         }
